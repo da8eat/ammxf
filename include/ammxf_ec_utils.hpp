@@ -23,14 +23,14 @@
 //we will use pointer to make it compatible with other libraries like libMXF
 
 //its possible to define how many octects should be check for compatibility
-//as a rule its 13 by might be different in some particular cases
+//as a rule its 13 but might be different in some particular cases
 bool is_SMPTE379_ec(unsigned char * key, unsigned int count = 13);
 
 //D10
 bool is_d10_ec(unsigned char * key);
 
 //below D10 functions doesnt check if its D10 essence container or not
-//you should check it before calling any on them
+//you should check it before calling any of them
 bool is_d10_50Mbps(unsigned char * key);
 bool is_d10_40Mbps(unsigned char * key);
 bool is_d10_30Mbps(unsigned char * key);

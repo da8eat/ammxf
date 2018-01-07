@@ -124,7 +124,7 @@ bool is_d10_ec(unsigned char * key) {
     ec &= key[14] >= D10Constraints::IMX_MIN &&
           key[14] <= D10Constraints::IMX_MAX;
 
-    ec &= (key[15] == D10Template::Defined || D10Template::Extended);
+    ec &= (key[15] == D10Template::Defined || key[15] == D10Template::Extended);
     return ec;
 }
 
