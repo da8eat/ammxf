@@ -45,3 +45,8 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+*.tlog
+build/Release/ammxf.pdb
+*.log
+build/Release/ammxf.lib
+*.obj
