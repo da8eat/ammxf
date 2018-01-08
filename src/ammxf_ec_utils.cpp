@@ -28,6 +28,8 @@ struct Mapping
         PRORES = 0x1c, //smpte rdd44
         VC3 = 0x11, //smpte st2019-4
         J2K = 0x0c, //smpte st0422-2014
+        AVC_NAL = 0x0f,
+        AVC_ES = 0x10
     };
 };
 
@@ -63,7 +65,7 @@ struct StreamId
 {
     enum
     {
-        MPEG2 = 0x60,
+        MPEG = 0x60,
     };
 };
 
@@ -78,6 +80,13 @@ struct EssenceWrappingType
         J2K_I2 = 4, //Interlaced Frame, 2 fields/KLV
         J2K_F1 = 5, // Field-wrapped Picture Element
         J2K_P1 = 6, // Frame- wrappe//todo ad custom so ond Picture Element
+
+        AVC_Stripe = 3, //Stripe Wrapping
+        AVC_Splice = 6, //Splice
+        AVC_ClosedGop = 7, //Closed Gop
+        AVC_Slave = 8, //Slave
+        AVC_Field = 9, //Frame (Field)
+
 
     };
 };
@@ -144,7 +153,7 @@ bool is_d10_30Mbps(unsigned char * key) {
 bool is_rdd9_ec(unsigned char * key) {
     bool ec = is_SMPTE379_ec(key, 13);
     ec &= key[13] == Mapping::MPEG_ES;
-    ec &= key[14] == StreamId::MPEG2;
+    ec &= key[14] == StreamId::MPEG;
     ec &= (key[15] == EssenceWrappingType::Frame);
     return ec;
 }
@@ -175,6 +184,27 @@ bool is_j2k_ec(unsigned char * key) {
     ec &= key[13] == Mapping::J2K;
     ec &= key[14] >= EssenceWrappingType::Frame && key[14] <= EssenceWrappingType::J2K_P1;
     //16th octect unused so we dont check it
+    return ec;
+}
+
+//smpte st381-3
+bool is_avc_ec(unsigned char * key) {
+    bool ec = is_SMPTE379_ec(key, 13);
+    //according to smpte 381-3 version 0x0d should be for wrapping type = 0x09 (Field)
+    //and version 0x0a for all other cases, neverthe less Edius set version equal to 1
+    //so we wont apply this check
+    //ec &= key[version_of_registry_pos] == 0x0a || key[version_of_registry_pos] == 0x0d;
+    ec &= key[13] == Mapping::AVC_NAL || key[13] == Mapping::AVC_ES;
+    ec &= key[14] == StreamId::MPEG;
+    ec &= key[15] == EssenceWrappingType::Frame ||
+          key[15] == EssenceWrappingType::Clip ||
+          key[15] == EssenceWrappingType::AVC_Stripe ||
+          key[15] == EssenceWrappingType::AVC_Splice ||
+          key[15] == EssenceWrappingType::AVC_ClosedGop ||
+          key[15] == EssenceWrappingType::AVC_Slave ||
+          key[15] == EssenceWrappingType::AVC_Field;
+    //16th octect unused so we dont check it
+
     return ec;
 }
 

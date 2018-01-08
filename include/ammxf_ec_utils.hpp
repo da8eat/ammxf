@@ -47,4 +47,7 @@ bool is_vc3_ec(unsigned char * key);
 //smpte st0422
 bool is_j2k_ec(unsigned char * key);
 
+//smpte 381-3
+bool is_avc_ec(unsigned char * key);
+
 #endif //__AMMXF_EC_UTILS_HPP__
