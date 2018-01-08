@@ -1,5 +1,5 @@
 /*
- * ammxf_defs.hpp is part of ammxf.
+ * ammxf_io.hpp is part of ammxf.
  *
  * Copyright (C) 2018 -  Alex Mogurenko <alex@mogurenko.com>
  *
@@ -17,26 +17,21 @@
  * along with ammxf.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef __AMMXF_DEFS_HPP__
-#define __AMMXF_DEFS_HPP__
+#ifndef __AMMXF_IO_HPP__
+#define __AMMXF_IO_HPP__
 
-#include <string>
+#include "ammxf_defs.hpp"
 
-typedef unsigned char ammxf_key[16];
-
-struct klv_triplet
+struct Reader
 {
-	ammxf_key key;
-    long long position;
-    long long length;
-	unsigned char initial_octet;
-    unsigned char length_of_length;
+	virtual unsigned int read(void * buffer, unsigned int size) const = 0;
+	virtual long long position() const = 0;
+	virtual long long length() const = 0;
+	virtual void seek(long long pos) const = 0;
+	virtual bool eof() const = 0;
 };
 
-#if defined(_WIN32)
-typedef std::wstring ammxf_string;
-#else
-typedef std::string ammxf_string;
-#endif
+bool read_klv_triplet(const Reader * r, klv_triplet * klv);
+bool read_ber_length(const Reader * r, long long * length, unsigned char * length_of_length, unsigned char * initial_octet);
 
-#endif //__AMMXF_DEFS_HPP__
+#endif //__AMMXF_IO_HPP__
