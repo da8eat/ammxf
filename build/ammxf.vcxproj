@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ammxf_ec_utils.cpp" />
+    <ClCompile Include="..\src\ammxf_ee_utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{28788DC6-0601-4C94-A396-0963DE01DD9D}</ProjectGuid>
