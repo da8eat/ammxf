@@ -22,7 +22,7 @@
 
 #include "ammxf_defs.hpp"
 
-struct Reader
+struct ammxf_reader
 {
 	virtual unsigned int read(void * buffer, unsigned int size) const = 0;
 	virtual long long position() const = 0;
@@ -31,7 +31,7 @@ struct Reader
 	virtual bool eof() const = 0;
 };
 
-bool read_klv_triplet(const Reader * r, klv_triplet * klv);
-bool read_ber_length(const Reader * r, long long * length, unsigned char * length_of_length, unsigned char * initial_octet);
+bool read_klv_triplet(const ammxf_reader * r, ammxf_klv_triplet * klv);
+bool read_ber_length(const ammxf_reader * r, long long * length, unsigned char * length_of_length);
 
 #endif //__AMMXF_IO_HPP__

@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ammxf_audio_utils.cpp" />
     <ClCompile Include="..\src\ammxf_ec_utils.cpp" />
+    <ClCompile Include="..\src\ammxf_edit_rate.cpp" />
     <ClCompile Include="..\src\ammxf_ee_utils.cpp" />
     <ClCompile Include="..\src\ammxf_file_io.cpp" />
     <ClCompile Include="..\src\ammxf_io.cpp" />

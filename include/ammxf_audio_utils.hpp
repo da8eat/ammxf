@@ -1,5 +1,5 @@
 /*
- * ammxf_defs.hpp is part of ammxf.
+ * ammxf_audio_utils.hpp is part of ammxf.
  *
  * Copyright (C) 2018 -  Alex Mogurenko <alex@mogurenko.com>
  *
@@ -17,31 +17,19 @@
  * along with ammxf.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef __AMMXF_DEFS_HPP__
-#define __AMMXF_DEFS_HPP__
+#ifndef __AMMXF_AUDIO_UTILS_HPP__
+#define __AMMXF_AUDIO_UTILS_HPP__
 
-#include <string>
+#include "ammxf_defs.hpp"
+#include <vector>
+#include <memory>
 
-typedef unsigned char ammxf_key[16];
+extern ammxf_rational sr_48khz;
 
-struct ammxf_klv_triplet
-{
-    ammxf_key key;
-    long long position;
-    long long length;
-    unsigned char length_of_length;
-};
+bool is_48khz(const ammxf_rational * sample_rate);
+std::vector<unsigned int> get_audio_cadence(const ammxf_rational * edit_rate, const ammxf_rational * sample_rate);
 
-struct ammxf_rational
-{
-    unsigned int numerator;
-    unsigned int denominator;
-};
+//aes3 is always 24 bit audio but we might want to read less, valid channels flagged in aes header
+std::vector<unsigned char> aes3_to_pcm(unsigned char * input, unsigned int size, unsigned int bps);
 
-#if defined(_WIN32)
-typedef std::wstring ammxf_string;
-#else
-typedef std::string ammxf_string;
-#endif
-
-#endif //__AMMXF_DEFS_HPP__
+#endif //__AMMXF_AUDIO_UTILS_HPP__

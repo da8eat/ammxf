@@ -23,9 +23,9 @@
 #include <memory>
 #include "ammxf_defs.hpp"
 
-struct Reader;
+struct ammxf_reader;
 
-std::shared_ptr<Reader> createReader(const ammxf_string & path);
+std::shared_ptr<ammxf_reader> create_reader(const ammxf_string & path);
 
 
 #endif //__AMMXF_FILE_IO_HPP__

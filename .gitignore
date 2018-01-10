@@ -50,3 +50,4 @@ build/Release/ammxf.pdb
 *.log
 build/Release/ammxf.lib
 *.obj
+*.suo

@@ -24,7 +24,11 @@
 #include <memory>
 #include <cassert>
 
-class FileReader : public Reader
+#if !defined (_WIN32)
+    #include <unistd.h>
+#endif
+
+class FileReader : public ammxf_reader
 {
 public:
 	FileReader();
@@ -102,13 +106,13 @@ bool FileReader::eof() const {
 }
 
 
-std::shared_ptr<Reader> createReader(const ammxf_string & path) {
+std::shared_ptr<ammxf_reader> create_reader(const ammxf_string & path) {
 	FileReader * reader = new (std::nothrow) FileReader();
 
 	if (!reader || !reader -> open(path)) {
 		delete reader;
-		return std::shared_ptr<Reader>();
+                return std::shared_ptr<ammxf_reader>();
 	}
 
-	return std::shared_ptr<Reader>(reader);
+        return std::shared_ptr<ammxf_reader>(reader);
 }

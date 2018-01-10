@@ -19,7 +19,7 @@
 
 #include <ammxf_io.hpp>
 
-bool read_klv_triplet(const Reader * r, klv_triplet * klv) {
+bool read_klv_triplet(const ammxf_reader * r, ammxf_klv_triplet * klv) {
     if (!r || !klv) {
         return false;
     }
@@ -29,26 +29,28 @@ bool read_klv_triplet(const Reader * r, klv_triplet * klv) {
 		return false;
 	}
 
-	return read_ber_length(r, &klv -> length, &klv -> length_of_length, &klv -> initial_octet);
+        return read_ber_length(r, &klv -> length, &klv -> length_of_length);
 }
 
-bool read_ber_length(const Reader * r, long long * length, unsigned char * length_of_length, unsigned char * initial_octet) {
+bool read_ber_length(const ammxf_reader * r, long long * length, unsigned char * length_of_length) {
 
-	if (!r || !length || !length_of_length || !initial_octet) {
+        if (!r || !length || !length_of_length) {
 		return false;
 	}
 
-	*length = 0;
-	if (r -> read(initial_octet, sizeof(*initial_octet)) != sizeof(*initial_octet)) {
+        length[0] = 0;
+        length_of_length[0] = 0;
+        unsigned char initial_octet = 0;
+        if (r -> read(&initial_octet, sizeof(initial_octet)) != sizeof(initial_octet)) {
 		return false;
 	}
 
-	if (initial_octet[0] & 0x80) {
+        if (initial_octet & 0x80) {
 		//long-form
 		//should we handle case when initial octet == 0x80?
 		//336m 3.2 allows it and says we have to determine length by alternative method
 
-		*length_of_length = initial_octet[0] & 0x7f;
+                length_of_length[0] = initial_octet & 0x7f;
 
 		//technically there are no restrictions on length of length by 336m
 		//e.g. 1111110b max possible value, 1111111b - prohibited by ISO/IEC 8825-1/8.1.3.5.c
@@ -58,21 +60,20 @@ bool read_ber_length(const Reader * r, long long * length, unsigned char * lengt
 			return false;
 		}
 
-		for (unsigned char i = 0; i < *length_of_length; ++i) {
+                for (unsigned char i = 0; i < length_of_length[0]; ++i) {
 			unsigned char b = 0;
 
 			if (r -> read(&b, sizeof(b)) != sizeof(b)) {
 				return false;
 			}
 
-			*length = length[0] << 8;
-			*length += static_cast<long long>(b);
+                        length[0] = length[0] << 8;
+                        length[0] += static_cast<long long>(b);
 		}
 	}
 	else {
 		//short-form
-		*length = static_cast<long long>(*initial_octet);
-		*length_of_length = 1;
+                length[0] = static_cast<long long>(initial_octet);
 	}
 
 	return true;
