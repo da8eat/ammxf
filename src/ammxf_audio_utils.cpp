@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 static const unsigned char channels_lut[16] = {
     0, 1, 1, 2, 1, 2, 2, 7, 1, 2, 2, 3, 2, 3, 3, 4
@@ -129,5 +130,54 @@ std::vector<unsigned char> aes3_to_pcm(unsigned char * input, unsigned int size,
     }
 
     return pcm;
+}
+
+//smpte st331m
+std::vector<unsigned char> pcm_to_aes3(unsigned char * input, unsigned int channels, unsigned int samples, unsigned int bps) {
+    std::vector<unsigned char> aes3;
+
+    if (!input || !channels || !samples || !bps) {
+        return aes3;
+    }
+
+    aes3.push_back(0); //FVUCP flag - 0, reserved - 0, index - 0 //todo write correct cadence index
+    aes3.push_back(samples & 0xff);
+    aes3.push_back((samples >> 8) & 0xff);
+    aes3.push_back((1 << channels) - 1); //we just set first N flags to 1 where N == channels which means first N channels are valid
+
+    for (unsigned int i = 0; i < samples; ++i) {
+        for (unsigned int j = 0; j < channels; ++j) {
+            //24 bit audio max we can put into aes3
+            unsigned char smpl[3] = { 0, 0, 0 };
+
+            for (unsigned int k = 0; k < (bps / 8) && k < 3; ++k) {
+                smpl[k + 3 - std::min<unsigned int>((bps / 8), 3)] = input[k];
+            }
+
+            input += (bps / 8);
+
+            aes3.push_back(j + (static_cast<int>(i == 0 && j == 0) << 3) + ((smpl[0] & 0x0f) << 4));
+            aes3.push_back((smpl[0] >> 4) + ((smpl[1] & 0x0f) << 4));
+            aes3.push_back((smpl[1] >> 4) + ((smpl[2] & 0x0f) << 4));
+            aes3.push_back(smpl[2] >> 4);
+        }
+
+        for (unsigned int j = channels; j < AES3_CHANNEL_COUNT; ++j) {
+            aes3.push_back(j);
+            aes3.push_back(0);
+            aes3.push_back(0);
+            aes3.push_back(0);
+        }
+    }
+
+    return aes3;
+}
+
+unsigned int aes3_packet_size_to_samples(unsigned int size) {
+    if (size < AES3_HEADER_SIZE) {
+        return 0;
+    }
+
+    return (size - AES3_HEADER_SIZE) / (AES3_SAMPLE_SIZE * AES3_CHANNEL_COUNT);
 }
 

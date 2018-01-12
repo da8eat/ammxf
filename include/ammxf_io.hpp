@@ -31,7 +31,19 @@ struct ammxf_reader
 	virtual bool eof() const = 0;
 };
 
+struct ammxf_writer
+{
+    virtual unsigned int write(const void * buffer, unsigned int size) const = 0;
+    virtual long long position() const = 0;
+    virtual void seek(long long pos) const = 0;
+    virtual void seek_end() const = 0;
+};
+
 bool read_klv_triplet(const ammxf_reader * r, ammxf_klv_triplet * klv);
 bool read_ber_length(const ammxf_reader * r, long long * length, unsigned char * length_of_length);
+
+bool write_klv_triplet(const ammxf_writer * w, const ammxf_klv_triplet * klv);
+//if length of length set to 0 we will automatically detect most correct length
+bool write_ber_length(const ammxf_writer * w, long long length, unsigned char length_of_length);
 
 #endif //__AMMXF_IO_HPP__

@@ -31,5 +31,8 @@ std::vector<unsigned int> get_audio_cadence(const ammxf_rational * edit_rate, co
 
 //aes3 is always 24 bit audio but we might want to read less, valid channels flagged in aes header
 std::vector<unsigned char> aes3_to_pcm(unsigned char * input, unsigned int size, unsigned int bps);
+std::vector<unsigned char> pcm_to_aes3(unsigned char * input, unsigned int channels, unsigned int samples, unsigned int bps);
+
+unsigned int aes3_packet_size_to_samples(unsigned int size);
 
 #endif //__AMMXF_AUDIO_UTILS_HPP__
