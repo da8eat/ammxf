@@ -29,6 +29,10 @@ bool is_SMPTE379_video_ee(unsigned char * key);
 bool is_SMPTE379_audio_ee(unsigned char * key);
 bool is_SMPTE379_data_ee(unsigned char * key);
 
+//avid always against any rule... even when smpte 2019-4 says first 12 octets are smpte 379-1 like
+//there still different key, ffmpeg also write that wierd avid key
+bool is_avid_ee(unsigned char * key);
+
 int get_track_number(unsigned char * key);
 
 #endif //__AMMXF_EE_UTILS_HPP__

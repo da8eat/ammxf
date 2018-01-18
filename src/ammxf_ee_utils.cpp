@@ -18,6 +18,7 @@
  */
 
 #include <ammxf_ee_utils.hpp>
+#include <string.h>
 
 static const unsigned char smpte_379m_ee[] =
 {
@@ -55,6 +56,18 @@ struct ItemType
         GC_Compound = 0x18,
     };
 };
+
+bool is_avid_ee(unsigned char * key) {
+	static const unsigned char avid_ee_prefix[12] = {
+		0x06, 0x0e, 0x2b, 0x34, 0x01, 0x02, 0x01, 0x01, 0x0e, 0x04, 0x03, 0x01
+	};
+
+	return (memcmp(key, &avid_ee_prefix[0], sizeof(avid_ee_prefix)) == 0) && 
+		(key[ident_octets] == ItemType::CP_Picture || key[ident_octets] == ItemType::CP_Sound ||
+		 key[ident_octets] == ItemType::CP_Data || key[ident_octets] == ItemType::GC_Picture ||
+		 key[ident_octets] == ItemType::GC_Sound || key[ident_octets] == ItemType::GC_Sound ||
+		 key[ident_octets] == ItemType::GC_Compound);
+}
 
 bool is_SMPTE379_ee(unsigned char * key) {
     bool ec = true;
